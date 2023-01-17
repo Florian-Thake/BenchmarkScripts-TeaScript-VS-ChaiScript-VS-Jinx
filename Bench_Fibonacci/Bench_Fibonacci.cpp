@@ -1,11 +1,11 @@
 /*
  * SPDX-FileCopyrightText: Copyright (C) 2023 Florian Thake, <contact |at| tea-age.solutions>.
  * SPDX-License-Identifier: MIT
-
- * NOTE: The license above does - of course - NOT apply for any '#include' file below. Different liceses may apply with each included file!
+ *
+ * NOTE: The license above does - of course - NOT apply for any '#include' file below. Different licenses may apply with each included file!
  */
 
-// Benchamrking calulating Fibonacci in script languages in and for C++ (ChaiScript, TeaScript, Jinx), using C++ as reference.
+// Benchmarking calculating Fibonacci in script languages in and for C++ (ChaiScript, TeaScript, Jinx), using C++ as reference.
 
 // === BENCH CONFIG ===
 
@@ -76,7 +76,7 @@ func fib( x ) {
 fib(25)
 )_SCRIPT_";
 
-// interative fibonacci function in TeaScript
+// iterative fibonacci function in TeaScript
 constexpr char tea_loop_code[] = R"_SCRIPT_(
 func fib( x ) {
     if( x > 1 ) {
@@ -188,7 +188,7 @@ double CalcTimeInSecs( auto s, auto e )
 }
 
 
-// now the eexution functions. we meausre only the execution times of the script. parsing and bootstrapping are excluded.
+// now the execution functions. we meausre only the execution times of the scripts. parsing and bootstrapping are excluded.
 
 #if BENCH_ENABLE_TEA
 double exec_tea()
