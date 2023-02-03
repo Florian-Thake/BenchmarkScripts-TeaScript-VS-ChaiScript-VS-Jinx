@@ -28,12 +28,9 @@ A result of the recursive Fibonacci Benchmark can be found here:
 *Note: That benchmark was done before Jinx was included as a testable script language.*
 
 # A note to TeaScript
-The header only C++ Library of TeaScript is not public released yet.
-But you can verify and test TeaScript by using the already published Host Application for execute standalone TeaScript files.
-
-You can download the latest preview release here: https://tea-age.solutions/downloads/
-
-The download packages (no installation required!) includes - beside other example scripts - a fibonacci test script with time measurement.
+TeaScript is now public available as C++ header only Library. <br>
+You can download the latest release here: https://tea-age.solutions/downloads/ <br>
+or use the snapshot on Github: https://github.com/Florian-Thake/TeaScript-Cpp-Library
 
 # License 
 SPDX-FileCopyrightText: Copyright (C) 2023 Florian Thake, <contact |at| tea-age.solutions>.
