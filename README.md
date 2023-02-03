@@ -32,6 +32,10 @@ TeaScript is now public available as C++ header only Library. <br>
 You can download the latest release here: https://tea-age.solutions/downloads/ <br>
 or use the snapshot on Github: https://github.com/Florian-Thake/TeaScript-Cpp-Library
 
+# Script Comparison
+A comparison between C++ scripting libraries is available here:<br>
+https://tea-age.solutions/2023/01/31/script-language-comparison-for-embed-in-cpp/
+
 # License 
 SPDX-FileCopyrightText: Copyright (C) 2023 Florian Thake, <contact |at| tea-age.solutions>.
 
