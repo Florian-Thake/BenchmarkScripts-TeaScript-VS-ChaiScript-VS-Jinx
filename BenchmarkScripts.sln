@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bench_Fibonacci", "Bench_Fibonacci\Bench_Fibonacci.vcxproj", "{4AEF4848-15DB-493A-AE0A-4AE430E4AAE1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bench_VariableLookup", "Bench_VariableLookup\Bench_VariableLookup.vcxproj", "{5798A767-47F2-4AFD-B049-39C4AF659F08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{4AEF4848-15DB-493A-AE0A-4AE430E4AAE1}.Release|x64.Build.0 = Release|x64
 		{4AEF4848-15DB-493A-AE0A-4AE430E4AAE1}.Release|x86.ActiveCfg = Release|Win32
 		{4AEF4848-15DB-493A-AE0A-4AE430E4AAE1}.Release|x86.Build.0 = Release|Win32
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Debug|x64.ActiveCfg = Debug|x64
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Debug|x64.Build.0 = Debug|x64
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Debug|x86.ActiveCfg = Debug|Win32
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Debug|x86.Build.0 = Debug|Win32
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Release|x64.ActiveCfg = Release|x64
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Release|x64.Build.0 = Release|x64
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Release|x86.ActiveCfg = Release|Win32
+		{5798A767-47F2-4AFD-B049-39C4AF659F08}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
