@@ -56,6 +56,10 @@
 #if BENCH_ENABLE_TEA
 #include <teascript/Parser.hpp>
 #include <teascript/CoreLibrary.hpp>
+// check version if new enough (Bootstrap( w. config) and GetAsInteger() exists)
+#if TEASCRIPT_VERSION < TEASCRIPT_BUILD_VERSION_NUMBER(0,9,0)
+# error Use TeaScript 0.9.0 or newer
+#endif
 #endif
 #if BENCH_ENABLE_CHAI
 #include <chaiscript/chaiscript.hpp>
@@ -194,7 +198,7 @@ double CalcTimeInSecs( auto s, auto e )
 double exec_tea()
 {
     teascript::Context c;
-    teascript::CoreLibrary().Bootstrap( c );
+    teascript::CoreLibrary().Bootstrap( c, teascript::config::full() );
     teascript::Parser  p;
     auto ast = p.Parse( tea_code );
     try {
@@ -202,7 +206,7 @@ double exec_tea()
         auto teares = ast->Eval( c );
         auto end    = Now();
 
-        std::cout << "value: " << teares.GetAsLongLong() << std::endl;
+        std::cout << "value: " << teares.GetAsInteger() << std::endl;
 
         return CalcTimeInSecs( start, end );
 
@@ -218,7 +222,7 @@ double exec_tea()
 double exec_tea_loop()
 {
     teascript::Context c;
-    teascript::CoreLibrary().Bootstrap( c );
+    teascript::CoreLibrary().Bootstrap( c, teascript::config::full() );
     teascript::Parser  p;
     auto ast = p.Parse( tea_loop_code );
     try {
@@ -226,7 +230,7 @@ double exec_tea_loop()
         auto teares = ast->Eval( c );
         auto end = Now();
 
-        std::cout << "value: " << teares.GetAsLongLong() << std::endl;
+        std::cout << "value: " << teares.GetAsInteger() << std::endl;
 
         return CalcTimeInSecs( start, end );
 
