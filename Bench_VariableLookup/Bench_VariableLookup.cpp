@@ -1,9 +1,8 @@
 /*
  * SPDX-FileCopyrightText: Copyright (C) 2024 Florian Thake, <contact |at| tea-age.solutions>.
  * SPDX-License-Identifier: MIT
- *
- * NOTE: The license above does - of course - NOT apply for any '#include' file below. Different licenses may apply with each included file!
  */
+
 
 // Benchmarking variable lookup / change in TeaScript's Context.
 
@@ -13,6 +12,26 @@
 #define BENCH_OPERATIONS        ((BENCH_VARS_PER_SCOPE) / 2)
 
 #define BENCH_ITERATIONS        10
+
+
+#define BENCH_ENABLE_LOOKUP     1
+#define BENCH_ENABLE_ADD        1
+#define BENCH_ENABLE_SET        1
+#define BENCH_ENABLE_SHARED_SET 1
+#define BENCH_ENABLE_REMOVE     1
+
+
+
+// With this define a switch between the old (== 0) and the new (== 1) implementation is possible. 
+// This define only exists for version 0.13. 0.12 and before only have the old impl, 0.14 and later will only have the new impl.
+# define TEASCRIPT_USE_COLLECTION_VARIABLE_STORAGE     1
+
+// define this for disable using of Boost container but using std container
+// undefine(!) it for Boost is used (if present in include path)
+// NOTE: Boost will only be used if the include path to boost is set properly!
+// NOTE: Using boost is only implemented for the new implementaion. The old will always use std container.
+#define TEASCRIPT_DISABLE_BOOST     1
+
 
 
 // handle some annoying compile errors on MSVC
@@ -26,8 +45,18 @@
 # define _CRT_SECURE_NO_WARNINGS
 #endif
 
+//for VS use /Zc:__cplusplus
+#if __cplusplus < 202002L
+# if defined _MSVC_LANG // fallback without /Zc:__cplusplus
+#  if !_HAS_CXX20
+#   error must use at least C++20
+#  endif
+# else
+#  error must use at least C++20
+# endif
+#endif
 
-# define TEASCRIPT_USE_COLLECTION_VARIABLE_STORAGE     1
+
 
 #include "teascript/Context.hpp"
 
@@ -184,40 +213,50 @@ int main()
 
     teascript::Context c;
 
+#if BENCH_ENABLE_LOOKUP
     std::cout << "\nStart Test Lookup" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         setup( c );
         auto secs = exec_lookup( c );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
 
+#if BENCH_ENABLE_ADD
     std::cout << "\nStart Test Add" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         setup( c );
         auto secs = exec_add( c );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
 
+#if BENCH_ENABLE_SET
     std::cout << "\nStart Test Set Assign" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         setup( c );
         auto secs = exec_set_copy( c );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
 
+#if BENCH_ENABLE_SHARED_SET
     std::cout << "\nStart Test Set SharedAssign" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         setup( c );
         auto secs = exec_set_shared( c );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
 
+#if BENCH_ENABLE_REMOVE
     std::cout << "\nStart Test Remove" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         setup( c );
         auto secs = exec_remove( c );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
 
     puts( "\n\nTest end." );
 
