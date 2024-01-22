@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>D:\code\libs\boost\boost_1_79_0;D:\code\libs\fmt\fmt-9.1.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\code\libs\boost\boost_1_84_0;D:\code\libs\fmt\fmt-10.1.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

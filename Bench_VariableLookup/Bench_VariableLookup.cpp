@@ -30,7 +30,7 @@
 // undefine(!) it for Boost is used (if present in include path)
 // NOTE: Boost will only be used if the include path to boost is set properly!
 // NOTE: Using boost is only implemented for the new implementaion. The old will always use std container.
-#define TEASCRIPT_DISABLE_BOOST     1
+//#define TEASCRIPT_DISABLE_BOOST     1
 
 
 
