@@ -104,6 +104,30 @@ func fib( x ) {
 fib(25)
 )_SCRIPT_";
 
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,12,0)
+// iterative fibonacci function in TeaScript with forall loop (available since 0.12)
+constexpr char tea_loop_code_new[] = R"_SCRIPT_(
+func fib( x ) {
+    if( x > 1 ) {
+        def out  := 1
+        def prev := 0
+        def tmp  := 1
+        def i    := 2
+        forall( i in _seq(2, x, 1) ) {
+            tmp  := out        
+            out  := out + prev
+            prev := tmp
+        }
+        out
+    } else {
+        x
+    }
+}
+
+fib(25)
+)_SCRIPT_";
+#endif
+
 // recursive fibonacci function in ChaiScript
 constexpr char chai_code[] = R"_SCRIPT_(
 def fib( x )
@@ -198,7 +222,7 @@ double CalcTimeInSecs( auto s, auto e )
 double exec_tea()
 {
     teascript::Context c;
-    teascript::CoreLibrary().Bootstrap( c, teascript::config::full() );
+    teascript::CoreLibrary().Bootstrap( c, teascript::config::core() );
     teascript::Parser  p;
     auto ast = p.Parse( tea_code );
     try {
@@ -219,12 +243,13 @@ double exec_tea()
     return -1.0;
 }
 
-double exec_tea_loop()
+template< typename T, size_t N>
+double exec_tea_loop( T const (&code)[N] )
 {
     teascript::Context c;
-    teascript::CoreLibrary().Bootstrap( c, teascript::config::full() );
+    teascript::CoreLibrary().Bootstrap( c, teascript::config::core() );
     teascript::Parser  p;
-    auto ast = p.Parse( tea_loop_code );
+    auto ast = p.Parse( code );
     try {
         auto start = Now();
         auto teares = ast->Eval( c );
@@ -475,9 +500,19 @@ int main()
 #if BENCH_ENABLE_TEA && (BENCH_KIND == BENCH_ITERATIVE)
     std::cout << "\nStart Test TeaScript LOOP" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
-        auto secs = exec_tea_loop();
+        auto secs = exec_tea_loop( tea_loop_code );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
+
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,12,0)
+#if BENCH_ENABLE_TEA && (BENCH_KIND == BENCH_ITERATIVE)
+    std::cout << "\nStart Test TeaScript LOOP (NEW forall)" << std::endl;
+    for( int i = BENCH_ITERATIONS; i != 0; --i ) {
+        auto secs = exec_tea_loop( tea_loop_code_new );
+        std::cout << "Calculation took: " << secs << " seconds." << std::endl;
+    }
+#endif
 #endif
 
 #if BENCH_ENABLE_CHAI && (BENCH_KIND == BENCH_ITERATIVE)
