@@ -37,6 +37,6 @@ A comparison between C++ scripting libraries is available here:<br>
 https://tea-age.solutions/2023/01/31/script-language-comparison-for-embed-in-cpp/
 
 # License 
-SPDX-FileCopyrightText: Copyright (C) 2023 Florian Thake, <contact |at| tea-age.solutions>.
+SPDX-FileCopyrightText: Copyright (C) 2024 Florian Thake, <contact |at| tea-age.solutions>.
 
 SPDX-License-Identifier: MIT
