@@ -20,6 +20,8 @@
 
 #define BENCH_ITERATIONS   3                    // loop count of each tested language.
 
+#define BENCH_FIB_NUM      25                   // the Fibonacci number to calculate.
+
 
 // handle some annoying compile errors on MSVC
 #if defined _MSC_VER  && !defined _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
@@ -77,7 +79,7 @@ func fib( x ) {
     }
 }
 
-fib(25)
+fib( fib_num )
 )_SCRIPT_";
 
 // iterative fibonacci function in TeaScript
@@ -101,9 +103,10 @@ func fib( x ) {
     }
 }
 
-fib(25)
+fib( fib_num )
 )_SCRIPT_";
 
+#if BENCH_ENABLE_TEA
 #if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,12,0)
 // iterative fibonacci function in TeaScript with forall loop (available since 0.12)
 constexpr char tea_loop_code_new[] = R"_SCRIPT_(
@@ -124,8 +127,9 @@ func fib( x ) {
     }
 }
 
-fib(25)
+fib( fib_num )
 )_SCRIPT_";
+#endif
 #endif
 
 // recursive fibonacci function in ChaiScript
@@ -139,7 +143,7 @@ def fib( x )
     }
 }
 
-fib(25);
+fib( fib_num );
 )_SCRIPT_";
 
 // iterative fibonacci function in ChaiScript
@@ -161,7 +165,7 @@ def fib( x )
     }
 }
 
-fib(25);
+fib( fib_num );
 )_SCRIPT_";
 
 // recursive fibonacci function in Jinx
@@ -175,7 +179,7 @@ function fib {x}
     return fib (x - 1) + fib (x - 2)
 end
 
-set res to fib 25
+set res to fib fib_num
 )_SCRIPT_";
 
 // iterative fibonacci function in Jinx
@@ -198,7 +202,7 @@ function fib {x}
     end
 end
 
-set res to fib 25
+set res to fib fib_num
 )_SCRIPT_";
 
 
@@ -223,6 +227,7 @@ double exec_tea()
 {
     teascript::Context c;
     teascript::CoreLibrary().Bootstrap( c, teascript::config::core() );
+    c.AddValueObject( "fib_num", teascript::ValueObject( static_cast<teascript::Integer>(BENCH_FIB_NUM), teascript::ValueConfig( true ) ) );
     teascript::Parser  p;
     auto ast = p.Parse( tea_code );
     try {
@@ -248,6 +253,7 @@ double exec_tea_loop( T const (&code)[N] )
 {
     teascript::Context c;
     teascript::CoreLibrary().Bootstrap( c, teascript::config::core() );
+    c.AddValueObject( "fib_num", teascript::ValueObject( static_cast<teascript::Integer>(BENCH_FIB_NUM), teascript::ValueConfig( true ) ) );
     teascript::Parser  p;
     auto ast = p.Parse( code );
     try {
@@ -273,6 +279,7 @@ double exec_tea_loop( T const (&code)[N] )
 double exec_chai()
 {
     chaiscript::ChaiScript chai;
+    chai.add( chaiscript::const_var( BENCH_FIB_NUM ), "fib_num" );
     auto ast = chai.parse( chai_code );
     try {
         auto start = Now();
@@ -295,6 +302,7 @@ double exec_chai()
 double exec_chai_loop()
 {
     chaiscript::ChaiScript chai;
+    chai.add( chaiscript::const_var( BENCH_FIB_NUM ), "fib_num" );
     auto ast = chai.parse( chai_loop_code );
     try {
         auto start = Now();
@@ -325,6 +333,7 @@ double exec_jinx()
     //params.logBytecode = true;
     Jinx::Initialize( params );
     auto jinx = Jinx::CreateRuntime();
+    jinx->GetLibrary( "core" )->RegisterProperty( Jinx::Visibility::Public, Jinx::Access::ReadOnly, "fib_num", Jinx::Variant( BENCH_FIB_NUM ) );
     auto script = jinx->CreateScript( jinx_code );
     try {
         auto start = Now();
@@ -354,6 +363,7 @@ double exec_jinx_loop()
     //params.logBytecode = true;
     Jinx::Initialize( params );
     auto jinx = Jinx::CreateRuntime();
+    jinx->GetLibrary( "core" )->RegisterProperty( Jinx::Visibility::Public, Jinx::Access::ReadOnly, "fib_num", Jinx::Variant( BENCH_FIB_NUM ) );
     auto script = jinx->CreateScript( jinx_loop_code );
     try {
         auto start = Now();
@@ -390,7 +400,7 @@ double exec_cpp()
 {
     try {
         auto start = Now();
-        auto res   = fib( 25 );
+        auto res   = fib( BENCH_FIB_NUM );
         auto end   = Now();
 
         std::cout << "value: " << res << std::endl;
@@ -423,7 +433,7 @@ double exec_cpp_loop()
 {
     try {
         auto start = Now();
-        auto res = fib_loop( 25 );
+        auto res = fib_loop( BENCH_FIB_NUM );
         auto end = Now();
 
         std::cout << "value: " << res << std::endl;
@@ -442,7 +452,7 @@ int main()
     std::cout << std::fixed;
     std::cout << std::setprecision( 8 );
 
-    std::cout << "Benchmarking TeaScript, ChaiScript and Jinx in calculating Fibonacci of 25...\n";
+    std::cout << "Benchmarking TeaScript, ChaiScript and Jinx in calculating Fibonacci of " << BENCH_FIB_NUM << " ...\n";
     std::cout << "... and C++ as a reference ... \n";
 
     // --- recursive ---
@@ -505,8 +515,8 @@ int main()
     }
 #endif
 
-#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,12,0)
 #if BENCH_ENABLE_TEA && (BENCH_KIND == BENCH_ITERATIVE)
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,12,0)
     std::cout << "\nStart Test TeaScript LOOP (NEW forall)" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         auto secs = exec_tea_loop( tea_loop_code_new );
