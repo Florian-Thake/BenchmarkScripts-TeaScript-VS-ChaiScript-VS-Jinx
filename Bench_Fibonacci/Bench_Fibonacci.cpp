@@ -1,8 +1,6 @@
 /*
- * SPDX-FileCopyrightText: Copyright (C) 2023 Florian Thake, <contact |at| tea-age.solutions>.
+ * SPDX-FileCopyrightText: Copyright (C) 2024 Florian Thake, <contact |at| tea-age.solutions>.
  * SPDX-License-Identifier: MIT
- *
- * NOTE: The license above does - of course - NOT apply for any '#include' file below. Different licenses may apply with each included file!
  */
 
 // Benchmarking calculating Fibonacci in script languages in and for C++ (ChaiScript, TeaScript, Jinx), using C++ as reference.
@@ -64,7 +62,18 @@
 #endif
 #endif
 #if BENCH_ENABLE_CHAI
+#if defined(_WIN32)
+#  define NOMINMAX
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# if defined( _MSC_VER )
+#  pragma warning( push )
+#  pragma warning( disable: 4244 )
+# endif
 #include <chaiscript/chaiscript.hpp>
+# if defined( _MSC_VER )
+#  pragma warning( pop )
+# endif
 #endif
 
 
