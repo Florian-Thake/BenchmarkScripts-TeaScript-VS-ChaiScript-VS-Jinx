@@ -123,9 +123,13 @@ class MyEngine : public teascript::Engine
 {
 public:
     MyEngine( ) : teascript::Engine( teascript::config::util() ) {}
-
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0)
+    inline teascript::Parser &GetParser() noexcept { return mBuildTools->mParser; }
+    inline teascript::Parser const &GetParser() const noexcept { return mBuildTools->mParser; }
+#else
     inline teascript::Parser &GetParser() noexcept { return mParser; }
     inline teascript::Parser const &GetParser() const noexcept { return mParser; }
+#endif
     inline teascript::Context &GetContext() noexcept { return mContext; }
     inline teascript::Context const &GetContext() const noexcept { return mContext; }
 };
