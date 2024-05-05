@@ -60,6 +60,11 @@
 #if TEASCRIPT_VERSION < TEASCRIPT_BUILD_VERSION_NUMBER(0,9,0)
 # error Use TeaScript 0.9.0 or newer
 #endif
+// check for compile and run in TeaStackVM feature
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0)
+#include <teascript/StackVMCompiler.hpp>
+#include <teascript/StackMachine.hpp>
+#endif
 #endif
 #if BENCH_ENABLE_CHAI
 #if defined(_WIN32)
@@ -257,6 +262,38 @@ double exec_tea()
     return -1.0;
 }
 
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0)
+double exec_tea_compiled()
+{
+    teascript::Context c;
+    teascript::CoreLibrary().Bootstrap( c, teascript::config::core() );
+    c.AddValueObject( "fib_num", teascript::ValueObject( static_cast<teascript::Integer>(BENCH_FIB_NUM), teascript::ValueConfig( true ) ) );
+    auto machine = std::make_shared<teascript::StackVM::Machine<false>>();
+    teascript::Parser  p;
+    teascript::StackVM::Compiler  compiler;
+    try {
+        auto prog = compiler.Compile( p.Parse( tea_code ), teascript::eOptimize::O2 );
+
+        auto start = Now();
+        machine->Exec( prog, c );
+        machine->ThrowPossibleErrorException();
+        auto teares = machine->MoveResult();
+        auto end = Now();
+
+        std::cout << "value: " << teares.GetAsInteger() << std::endl;
+
+        return CalcTimeInSecs( start, end );
+
+    } catch( teascript::exception::runtime_error const &ex ) {
+        teascript::util::pretty_print( ex );
+    } catch( std::exception const &ex ) {
+        puts( ex.what() );
+    }
+
+    return -1.0;
+}
+#endif
+
 template< typename T, size_t N>
 double exec_tea_loop( T const (&code)[N] )
 {
@@ -282,6 +319,39 @@ double exec_tea_loop( T const (&code)[N] )
 
     return -1.0;
 }
+
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0)
+template< typename T, size_t N>
+double exec_tea_loop_compiled( T const (&code)[N] )
+{
+    teascript::Context c;
+    teascript::CoreLibrary().Bootstrap( c, teascript::config::core() );
+    c.AddValueObject( "fib_num", teascript::ValueObject( static_cast<teascript::Integer>(BENCH_FIB_NUM), teascript::ValueConfig( true ) ) );
+    auto machine = std::make_shared<teascript::StackVM::Machine<false>>();
+    teascript::Parser  p;
+    teascript::StackVM::Compiler  compiler;
+    try {
+        auto prog = compiler.Compile( p.Parse( code ), teascript::eOptimize::O2 );
+
+        auto start = Now();
+        machine->Exec( prog, c );
+        machine->ThrowPossibleErrorException();
+        auto teares = machine->MoveResult();
+        auto end = Now();
+
+        std::cout << "value: " << teares.GetAsInteger() << std::endl;
+
+        return CalcTimeInSecs( start, end );
+
+    } catch( teascript::exception::runtime_error const &ex ) {
+        teascript::util::pretty_print( ex );
+    } catch( std::exception const &ex ) {
+        puts( ex.what() );
+    }
+
+    return -1.0;
+}
+#endif
 #endif
 
 #if BENCH_ENABLE_CHAI
@@ -490,6 +560,16 @@ int main()
     }
 #endif
 
+#if BENCH_ENABLE_TEA && (BENCH_KIND == BENCH_RECURSIVE)
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0)
+    std::cout << "\nStart Test TeaScript in TeaStackVM" << std::endl;
+    for( int i = BENCH_ITERATIONS; i != 0; --i ) {
+        auto secs = exec_tea_compiled();
+        std::cout << "Calculation took: " << secs << " seconds." << std::endl;
+    }
+#endif
+#endif
+
 #if BENCH_ENABLE_CHAI && (BENCH_KIND == BENCH_RECURSIVE)
     std::cout << "\nStart Test ChaiScript" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
@@ -529,6 +609,22 @@ int main()
     std::cout << "\nStart Test TeaScript LOOP (NEW forall)" << std::endl;
     for( int i = BENCH_ITERATIONS; i != 0; --i ) {
         auto secs = exec_tea_loop( tea_loop_code_new );
+        std::cout << "Calculation took: " << secs << " seconds." << std::endl;
+    }
+#endif
+#endif
+
+#if BENCH_ENABLE_TEA && (BENCH_KIND == BENCH_ITERATIVE)
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0)
+    std::cout << "\nStart Test TeaScript LOOP in TeaStackVM" << std::endl;
+    for( int i = BENCH_ITERATIONS; i != 0; --i ) {
+        auto secs = exec_tea_loop_compiled( tea_loop_code );
+        std::cout << "Calculation took: " << secs << " seconds." << std::endl;
+    }
+
+    std::cout << "\nStart Test TeaScript LOOP (NEW forall) in TeaStackVM" << std::endl;
+    for( int i = BENCH_ITERATIONS; i != 0; --i ) {
+        auto secs = exec_tea_loop_compiled( tea_loop_code_new );
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
 #endif
