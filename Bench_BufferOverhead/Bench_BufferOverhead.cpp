@@ -28,6 +28,7 @@
 #define BENCH_ITERATIONS   3                    // loop count for each test.
 
 #define BENCH_ENABLE_TEACODE         1
+#define BENCH_ENABLE_TEA_COMPILE     1          // only possible with version >= 0.14
 #define BENCH_ENABLE_CHAI            1
 #define BENCH_ENABLE_CORE_LIB        1
 #define BENCH_ENABLE_CORE_LIB_FUNC   1
@@ -160,9 +161,38 @@ double exec_tea()
     return -1.0;
 }
 
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER(0,14,0) && BENCH_ENABLE_TEA_COMPILE
+double exec_tea_compile()
+{
+    teascript::Engine  engine;
+
+    engine.AddConst( "width", BENCH_IMAGE_WIDTH );
+    engine.AddConst( "height", BENCH_IMAGE_HEIGHT );
+    engine.ExecuteCode( tea_code_prepare );
+    auto prog = engine.CompileCode( tea_code_test, teascript::eOptimize::O2 );
+    try {
+        auto start  = Now();
+        auto teares = engine.ExecuteProgram( prog );
+        auto end    = Now();
+
+        std::cout << "value: " << teares.GetAsInteger() << std::endl;
+
+        return CalcTimeInSecs( start, end );
+
+    } catch( teascript::exception::runtime_error const &ex ) {
+        teascript::util::pretty_print( ex );
+    } catch( std::exception const &ex ) {
+        puts( ex.what() );
+    }
+
+    return -1.0;
+}
+#endif
+
 #if BENCH_ENABLE_CHAI
 constexpr char chai_code[] = R"_SCRIPT_(
-for( var pixel = 0; pixel < width * height - 1; ++pixel ) {
+var size = width * height - 1;
+for( var pixel = 0; pixel < size; ++pixel ) {
     _buf_set_u32( buf, pixel * 4, green );
 }
 buf.size(); // return sth ...
@@ -385,6 +415,18 @@ int main()
         auto secs = exec_tea();
         std::cout << "Calculation took: " << secs << " seconds." << std::endl;
     }
+#endif
+
+#if BENCH_ENABLE_TEA_COMPILE
+#if TEASCRIPT_VERSION >= TEASCRIPT_BUILD_VERSION_NUMBER( 0, 14, 0 )
+    std::cout << "\nStart Test TeaScript in TeaStackVM" << std::endl;
+    for( int i = BENCH_ITERATIONS; i != 0; --i ) {
+        auto secs = exec_tea_compile();
+        std::cout << "Calculation took: " << secs << " seconds." << std::endl;
+    }
+#else
+    std::cout << "TeaScript version is too old for test in TeaStackVM. Test skipped. " << std::endl;
+#endif
 #endif
 
 #if BENCH_ENABLE_CHAI
