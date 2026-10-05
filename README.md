@@ -29,6 +29,12 @@ Actually this is a TeaScript only benchmark for comparing different TeaScript ve
 
 In this benchmark a 32 bit RGBA image buffer with either Full HD or UHD resolution must be filled pixel by pixel.
 
+## LoopArithmetic Benchmark
+
+This benchmark runs a counting loop (default 1,000,000 iterations) and floating point arithmetic (Mandelbrot, default 100x100 points with max. 50 iterations each).
+Both run in all execution modes of the TeaScript Host Application: compiled for the TeaStackVM with `-D`, `-O0`, `-O1`, `-O2` and evaluated as AST with `--eval` and `-D --eval`.
+Actually this is a TeaScript only benchmark (requires TeaScript 0.18.0 or newer).
+
 # Usage
 - You need all script languages, which you want to test, as source (header only).
   - you can disable script languages with configuration macros at the top of the benchmark code.
